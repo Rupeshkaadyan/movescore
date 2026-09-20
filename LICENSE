@@ -1,21 +1,69 @@
-MIT License
+SOURCE-AVAILABLE LICENSE — PERMISSION REQUIRED
 
-Copyright (c) 2026 MoveScore
+Copyright (c) 2026 Rupesh Kadyan. All rights reserved.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+This source code is published for portfolio, demonstration and review
+purposes. It is NOT open source. Reading it is welcome; using it is not,
+unless you ask me first and I say yes in writing.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+--------------------------------------------------------------------------
+WHAT YOU MAY DO WITHOUT ASKING
+--------------------------------------------------------------------------
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+  - Read, view and study the code.
+  - Link to this repository, and show it or quote short excerpts from it in
+    a review, article or CV discussion, provided the source is attributed.
+
+--------------------------------------------------------------------------
+WHAT YOU MAY NOT DO WITHOUT PRIOR WRITTEN PERMISSION
+--------------------------------------------------------------------------
+
+You may not, in whole or in part:
+
+  - Use, run, host or deploy this software or any derivative of it.
+  - Copy, fork-and-publish, mirror or redistribute it.
+  - Modify it, merge it into another project, or create derivative works.
+  - Publish, sublicense, sell, rent or otherwise commercially exploit it.
+  - Reuse the data model, scoring methodology, copy, design, branding or
+    visual assets.
+
+This applies to private and internal use as well as public use. "I only
+changed a little" is still a derivative work.
+
+--------------------------------------------------------------------------
+HOW TO ASK
+--------------------------------------------------------------------------
+
+Contact me and tell me who you are and what you want to use it for. I do
+grant permission — I just want to know who is using it and how.
+
+  GitHub:   https://github.com/Rupeshkaadyan
+  LinkedIn: https://www.linkedin.com/in/rupesh-kadyan-aabb15331/
+  Issues:   https://github.com/Rupeshkaadyan/movescore/issues
+
+Permission is only valid once given in writing (an email, a direct message
+or a comment on a pull request is fine). Silence is not permission. If
+permission is granted, this license still applies to everything not
+expressly covered by that permission.
+
+--------------------------------------------------------------------------
+NO WARRANTY
+--------------------------------------------------------------------------
+
+This software is provided "AS IS", without warranty of any kind, express or
+implied, including but not limited to the warranties of merchantability,
+fitness for a particular purpose and noninfringement. In no event shall the
+author be liable for any claim, damages or other liability arising from the
+use of, or inability to use, this software.
+
+The included dataset is illustrative demo data. It is not verified
+statistics and must not be relied on for financial, tax, legal or
+relocation decisions.
+
+--------------------------------------------------------------------------
+NOTE ON PREVIOUS VERSIONS
+--------------------------------------------------------------------------
+
+Earlier revisions of this repository were published under the MIT License.
+Copies obtained while that license was in effect remain governed by it.
+This license applies to the current revision and all future ones.

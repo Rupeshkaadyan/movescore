@@ -1,5 +1,15 @@
 # Contributing
 
+> **This project is source-available, not open source.** You may read it, but
+> using, copying or modifying it requires permission first — see
+> [LICENSE](LICENSE). **Open a pull request only after you've been invited.**
+> Want to help, or want to use this in something of your own? Contact
+> [@Rupeshkaadyan](https://github.com/Rupeshkaadyan) first. Unsolicited PRs
+> cannot be merged, because accepting one would grant rights the license
+> does not.
+
+The rules below apply to anyone working on the codebase with permission.
+
 ## Before you start
 
 ```bash

@@ -16,7 +16,7 @@ every number it produced.
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript)](https://www.typescriptlang.org)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-v4-38BDF8?logo=tailwindcss)](https://tailwindcss.com)
 [![Tests](https://img.shields.io/badge/tests-51%20passing-22A06B)](#testing)
-[![License: MIT](https://img.shields.io/badge/license-MIT-22A06B)](LICENSE)
+[![License: Source-available](https://img.shields.io/badge/license-source--available%20%2F%20ask%20first-red)](LICENSE)
 
 </div>
 
@@ -279,5 +279,13 @@ does not guarantee savings.
 
 ## License
 
-MIT — see [LICENSE](LICENSE). Built by
-[Rupesh Kadyan](https://github.com/Rupeshkaadyan).
+**Source-available, not open source.** Reading this code is welcome; using,
+copying, modifying or deploying it is not, unless you ask first and I give
+permission in writing. That includes private and internal use.
+
+If you want to use any part of it — the engine, the data model, the design —
+just [contact me](https://github.com/Rupeshkaadyan) and tell me what for. I do
+say yes; I just want to know who's using it and how. See [LICENSE](LICENSE).
+
+Built by [Rupesh Kadyan](https://github.com/Rupeshkaadyan) —
+[LinkedIn](https://www.linkedin.com/in/rupesh-kadyan-aabb15331/).
