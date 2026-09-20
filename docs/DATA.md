@@ -11,7 +11,7 @@ That rule is enforced in code by three things:
    `METRIC_SOURCE_GROUP`, which maps each metric group to a source id.
 2. `DATA_STATUS` — a single `"demo" | "live"` switch. When it is `"demo"`, the
    site renders the amber banner, the footer disclaimer and inline notes.
-3. `supabase/schema.sql` — every quantitative table has `source_id`,
+3. `supabase/migrations/0001_init.sql` — every quantitative table has `source_id`,
    `source_date`, `last_updated` and `methodology_note` columns.
 
 ## Current dataset (demo)
@@ -49,14 +49,42 @@ changes the values behind `CITY_BY_SLUG`.
 1. **Ingest** — scheduled jobs write raw payloads to a `raw_*` schema with the
    fetch timestamp and the publisher's `last_updated`.
 2. **Normalise** — one transform per metric group into the tables in
-   `supabase/schema.sql`. Each row carries `source_id`, `source_date`,
-   `methodology_note`.
+   `supabase/migrations/0001_init.sql`. Each row carries `source_id`,
+   `source_date`, `methodology_note`.
 3. **Validate** — range checks (rent > 0, rate between 0 and 20), cross-source
    checks (city rent within ±60% of metro FMR), and a year-over-year outlier
    check. Failures land in an admin review queue rather than shipping silently.
 4. **Flip** — once a metric group passes validation for all 30 cities, that
    group's `DATA_STATUS` flips to live and the demo banner narrows to the groups
    still on demo data.
+
+## History: never silently overwrite
+
+Metrics are **append-only with an effective date**. An ingestion run inserts a
+new row with a fresh `effective_date`; it does not UPDATE the previous value in
+place. The website reads the latest effective row per metric.
+
+This matters because "median rent in Austin" is only meaningful with a date
+attached. Overwriting in place would quietly erase the previous figure and make
+year-over-year claims unverifiable. Where a metric group has no meaningful
+history, the row is still dated — a single-point series is honest, an undated
+value is not.
+
+To retire a bad value, mark it `superseded` rather than deleting it.
+
+## Backups and restore
+
+- **Automated:** Supabase takes daily backups on paid plans (PITR on Pro and
+  above). On the free tier there is no automated backup — take your own.
+- **Manual export before any migration:**
+  `supabase db dump -f backup-$(date +%F).sql`
+- **Restore:** restore to a scratch project first and diff row counts against
+  the backup before promoting. Never restore straight over production.
+- **Migrations** are forward-only files in `supabase/migrations/`. Apply with
+  `supabase db push`; never hand-edit the production schema, or the next
+  migration will drift from what is actually deployed.
+- **Verify after restore:** row counts per metric table, then load one city
+  page and one comparison and confirm the numbers match the pre-restore values.
 
 ## Expansion policy
 

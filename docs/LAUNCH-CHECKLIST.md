@@ -13,6 +13,10 @@ account, payment, DNS or 2FA · **[post]** must be re-run against the live URL.
 - [x] **[auto]** Security headers set (`next.config.ts`)
 - [x] **[auto]** No tracked `.env` file; `.env.example` has empty values only
 - [x] **[auto]** Git history scanned for key-shaped strings — clean
+- [x] **[auto]** `error.tsx` / `not-found.tsx` render friendly states; no stack
+      trace is ever shown to a user
+- [x] **[auto]** Backups, restore procedure and append-only metric history
+      documented in `docs/DATA.md`
 - [x] **[auto]** `npm run lint` — 0 errors, 0 warnings
 - [x] **[auto]** Tests cover the query parser and the calculation engine (51)
 
@@ -84,6 +88,24 @@ connection. Supabase becomes load-bearing only when accounts ship.
 - [x] **[auto]** No "100% accurate" / "best city" / "guaranteed savings" claims
 - [ ] **[owner]** Replace demo data with sourced data before marketing the site
 - [ ] **[owner]** Set up `hello@` / `support@` mail once the domain exists
+
+## Performance (measured, Chromium mobile viewport 390×844)
+
+| Page                    | TTFB | FCP  | Total | Requests |
+| ----------------------- | ---- | ---- | ----- | -------- |
+| `/`                     | 29ms | 152ms | 51 KB | 19 |
+| `/cities/austin-tx`     | 12ms | 64ms  | 50 KB | 20 |
+| `/compare/...-vs-...`   | 94ms | 140ms | 50 KB | 22 |
+| `/move-cost`            | 15ms | 64ms  | 53 KB | 22 |
+
+- [x] **[auto]** All pages are statically prerendered — no server work at
+      request time, no database on the critical path
+- [x] **[auto]** 103 kB shared First Load JS; no chart library
+- [x] **[auto]** Images: 2 per page, lazy-loaded below the fold, all have `alt`
+- [x] **[auto]** Fonts: Inter self-hosted via `next/font` with `display: swap`
+      (47 kB — the single largest asset; acceptable for a variable font)
+- [x] **[auto]** Security headers set; static assets served with long cache
+- [ ] **[post]** Re-measure on the live domain with real network throttling
 
 ## QA
 
