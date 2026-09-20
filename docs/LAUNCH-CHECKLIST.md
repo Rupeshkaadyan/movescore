@@ -13,9 +13,8 @@ account, payment, DNS or 2FA · **[post]** must be re-run against the live URL.
 - [x] **[auto]** Security headers set (`next.config.ts`)
 - [x] **[auto]** No tracked `.env` file; `.env.example` has empty values only
 - [x] **[auto]** Git history scanned for key-shaped strings — clean
-- [ ] **[auto]** `npm run lint` — ESLint deps declared and CI wired, but not
-      executed in this environment
-- [x] **[auto]** Tests cover the query parser and the calculation engine
+- [x] **[auto]** `npm run lint` — 0 errors, 0 warnings
+- [x] **[auto]** Tests cover the query parser and the calculation engine (51)
 
 ## GitHub
 
@@ -88,8 +87,21 @@ connection. Supabase becomes load-bearing only when accounts ship.
 
 ## QA
 
-- [ ] **[post]** Smoke test 1–15 (see DEPLOYMENT.md)
-- [ ] **[post]** Mobile widths 320 / 375 / 390 / 430 / 768 / 1024 / 1440+
-- [ ] **[post]** No horizontal scroll at 320px
-- [ ] **[post]** Safari, Chrome, Firefox, Edge
-- [ ] **[post]** 404 page renders on an unknown city
+- [x] **[auto]** Smoke test: homepage → pick cities → salary → household →
+      compare → change scenario → reload → 404 → invalid params → no JS errors
+      (`npm run qa:smoke`, 11/11)
+- [x] **[auto]** Mobile widths 320 / 375 / 390 / 430 / 768 / 1024 / 1440 across
+      9 pages — no horizontal scroll, no console errors (`npm run qa:responsive`,
+      63/63)
+- [x] **[auto]** 404 page renders on an unknown city
+- [ ] **[post]** Re-run both scripts against the live URL after deploy
+- [ ] **[post]** Safari, Firefox, Edge — Chromium verified here; the other
+      engines are not installed in this environment
+
+### Fixed during QA
+
+- **320px horizontal scroll on `/compare/*`** — the projections panel used fixed
+  `w-40` + `w-24` columns whose min-content width (330px) exceeded a 280px grid
+  parent. Narrowed responsively.
+- **Production server 500 on every route** — conflicting dynamic segment names
+  (`/salary/[amount]/[slug]` vs `/salary/[slug]`). `next build` did not catch it.

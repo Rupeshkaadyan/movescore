@@ -97,6 +97,26 @@ Work through `docs/LAUNCH-CHECKLIST.md`. Minimum: homepage loads, a comparison
 runs, a scenario URL reproduces after reload, an unknown city 404s, and mobile
 has no horizontal scroll.
 
+Two scripts automate most of that. They drive the **system Chrome** through
+`puppeteer-core`, which is intentionally not a project dependency — install it
+anywhere and point `NODE_PATH` at it:
+
+```bash
+npm i puppeteer-core            # anywhere, or in a scratch workspace
+npm run build && npm run start  # server on :3000
+
+export NODE_PATH=/path/to/that/node_modules
+npm run qa:smoke        # 11 assertions: run a comparison, change scenario, reload, 404, bad params
+npm run qa:responsive   # 7 widths x 9 pages: horizontal overflow + console errors
+```
+
+Both exit non-zero on failure, so they can be dropped into CI or run against a
+live URL (`node scripts/smoke.mjs https://movescore.com`).
+
+`qa:responsive` checks `document.scrollWidth` against the viewport at
+320/375/390/430/768/1024/1440 and names the offending element when a page
+overflows — that is how the 320px comparison-page overflow was caught.
+
 ## 6. Rollback
 
 Vercel keeps every deployment immutable. To roll back: Deployments → previous

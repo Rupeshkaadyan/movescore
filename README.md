@@ -43,6 +43,10 @@ npm run typecheck   # tsc --noEmit
 npm run lint        # eslint .
 npm test            # vitest run (51 tests)
 npm run sample      # print a worked comparison to stdout
+
+# browser QA (needs the system Chrome; see docs/DEPLOYMENT.md)
+npm run qa:smoke        # end-to-end comparison flow
+npm run qa:responsive   # horizontal-overflow check at 7 widths
 ```
 
 ## Environment variables
