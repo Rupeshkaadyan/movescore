@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Search } from "lucide-react";
 import { search, cityOptionList } from "@/lib/cities";
 import { Card, EmptyState } from "@/components/ui/primitives";
+import { track } from "@/lib/analytics";
 
 const EXAMPLES = ["Austin", "New York vs Austin", "100k in Texas", "Seattle"];
 
@@ -19,6 +20,19 @@ export function SearchExperience() {
   const [query, setQuery] = useState("");
   const cities = useMemo(() => cityOptionList(), []);
   const hits = useMemo(() => search(query), [query]);
+
+  // Search text never leaves the browser — only that a search happened and
+  // whether it produced results.
+  useEffect(() => {
+    if (!query.trim()) return;
+    const timer = setTimeout(() => {
+      track("search_used", {
+        results: hits.length,
+        matchedComparison: hits.some((hit) => hit.type === "comparison"),
+      });
+    }, 800);
+    return () => clearTimeout(timer);
+  }, [query, hits.length]);
 
   return (
     <div>

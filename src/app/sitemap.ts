@@ -2,7 +2,6 @@ import type { MetadataRoute } from "next";
 import { CITIES, POPULAR_COMPARISONS } from "@/lib/data/cities";
 import { CITIES_WITH_NEIGHBORHOODS } from "@/lib/data/neighborhoods";
 import { GUIDES } from "@/lib/data/guides";
-import { SALARY_PRESETS } from "@/lib/defaults";
 import { absoluteUrl } from "@/lib/seo";
 
 /**
@@ -21,9 +20,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/housing",
     "/neighborhoods",
     "/guides",
-    "/search",
+    // /search is intentionally absent: it is `noindex` internal search.
     "/methodology",
     "/move-cost",
+    "/about",
+    "/privacy",
+    "/terms",
+    "/contact",
   ].map((path) => ({
     url: absoluteUrl(path),
     lastModified: now,
@@ -60,14 +63,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
-  const salaryRoutes = CITIES.flatMap((city) =>
-    SALARY_PRESETS.map((amount) => ({
-      url: absoluteUrl(`/salary/${amount}/${city.slug}`),
-      lastModified: now,
-      changeFrequency: "monthly" as const,
-      priority: 0.5,
-    })),
-  );
+  /** Salary calculator landing pages: /salary/austin-tx */
+  const salaryCityRoutes = CITIES.map((city) => ({
+    url: absoluteUrl(`/salary/${city.slug}`),
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.6,
+  }));
+
+  // NOTE: /salary/<amount>/<city> is deliberately not published. It is the
+  // same page as /salary/<city> with one number changed, so 30 cities x 6
+  // presets would be 180 near-duplicate URLs — classic thin programmatic
+  // content. Those pages stay reachable from the calculator (and are marked
+  // `noindex, follow`) but are kept out of the sitemap.
 
   const guideRoutes = GUIDES.map((guide) => ({
     url: absoluteUrl(`/guides/${guide.slug}`),
@@ -81,7 +89,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...cityRoutes,
     ...neighborhoodRoutes,
     ...comparisonRoutes,
-    ...salaryRoutes,
+    ...salaryCityRoutes,
     ...guideRoutes,
   ];
 }

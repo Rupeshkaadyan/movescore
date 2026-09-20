@@ -7,6 +7,7 @@ import type { HouseholdInput } from "@/lib/types";
 import type { CompareOptions } from "@/lib/calc/compare";
 import { buildQueryString } from "@/lib/query";
 import { DEFAULT_INPUT } from "@/lib/defaults";
+import { track } from "@/lib/analytics";
 import { Card } from "@/components/ui/primitives";
 
 /**
@@ -29,6 +30,12 @@ export function ScenarioControls({
 
   function commit(next: HouseholdInput, nextAdjust: boolean) {
     setDraft(next);
+    // Deliberately excludes salary and household size.
+    track("scenario_created", {
+      housing: next.housingMode,
+      car: next.ownsCar ? "yes" : "no",
+      marketAdjust: nextAdjust,
+    });
     startTransition(() => {
       router.replace(`${basePath}?${buildQueryString(next, { marketAdjustSalary: nextAdjust })}`, {
         scroll: false,

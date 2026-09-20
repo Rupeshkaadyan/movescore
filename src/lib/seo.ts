@@ -50,6 +50,17 @@ export function buildMetadata({
   };
 }
 
+/**
+ * Serialize structured data for a `<script type="application/ld+json">` block.
+ *
+ * `JSON.stringify` alone is not enough: a value containing `</script>` would
+ * terminate the script element early. Escaping `<` as a unicode escape keeps
+ * the JSON valid while making script break-out impossible.
+ */
+export function jsonLd(data: unknown): string {
+  return JSON.stringify(data).replace(/</g, "\\u003c");
+}
+
 /** BreadcrumbList structured data. */
 export function breadcrumbSchema(
   items: { name: string; url: string }[],

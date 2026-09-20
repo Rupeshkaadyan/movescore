@@ -8,6 +8,8 @@ export const metadata: Metadata = buildMetadata({
   description:
     "Search cities, comparisons, salary calculators and guides. Try “Austin”, “New York vs Austin” or “100k in Texas”.",
   path: "/search",
+  // Internal search results are not indexable content.
+  noIndex: true,
 });
 
 export default function SearchPage() {

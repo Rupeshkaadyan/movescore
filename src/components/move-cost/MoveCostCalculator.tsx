@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CITIES } from "@/lib/data/cities";
 import { estimateMoveCost } from "@/lib/calc/moveCost";
 import { monthlyCosts } from "@/lib/calc/costOfLiving";
@@ -8,6 +8,7 @@ import { DEFAULT_INPUT } from "@/lib/defaults";
 import type { HouseholdInput } from "@/lib/types";
 import { money } from "@/lib/format";
 import { Card } from "@/components/ui/primitives";
+import { track } from "@/lib/analytics";
 
 export function MoveCostCalculator() {
   const [from, setFrom] = useState("new-york-ny");
@@ -25,6 +26,11 @@ export function MoveCostCalculator() {
       estimate: estimateMoveCost(origin, destination, input, costs.housing),
     };
   }, [from, to, input]);
+
+  useEffect(() => {
+    if (!result) return;
+    track("calculator_used", { calculator: "move_cost", from, to });
+  }, [from, to, result]);
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_1.1fr]">

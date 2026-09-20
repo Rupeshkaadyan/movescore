@@ -6,6 +6,7 @@ import { ArrowRight } from "lucide-react";
 import type { HouseholdInput } from "@/lib/types";
 import { DEFAULT_INPUT, DEFAULT_OPTIONS } from "@/lib/defaults";
 import { compareHref } from "@/lib/query";
+import { track } from "@/lib/analytics";
 
 type Option = { slug: string; label: string };
 
@@ -30,6 +31,8 @@ export function HeroSearch({
   function submit(event: React.FormEvent) {
     event.preventDefault();
     if (from === to) return;
+    // City pair only — never salary or household details.
+    track("comparison_started", { from, to });
     router.push(compareHref(from, to, input, DEFAULT_OPTIONS));
   }
 
