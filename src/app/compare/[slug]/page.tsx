@@ -15,7 +15,6 @@ import { parseComparisonSlug, relatedComparisons } from "@/lib/cities";
 import { parseCompareOptions, parseHouseholdInput, type RawParams } from "@/lib/query";
 import { money, signedMoney } from "@/lib/format";
 import { CITIES, POPULAR_COMPARISONS } from "@/lib/data/cities";
-import { DEFAULT_INPUT, DEFAULT_OPTIONS } from "@/lib/defaults";
 import { absoluteUrl, breadcrumbSchema, buildMetadata, jsonLd } from "@/lib/seo";
 import { SCORE_METHODOLOGY } from "@/lib/calc/moveScore";
 import { DATA_STATUS } from "@/lib/data/sources";

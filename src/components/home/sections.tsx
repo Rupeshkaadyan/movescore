@@ -13,7 +13,7 @@ import { GUIDES } from "@/lib/data/guides";
 import { compareHref } from "@/lib/query";
 import { DEFAULT_INPUT, DEFAULT_OPTIONS } from "@/lib/defaults";
 import { computeComparison } from "@/lib/calc/compare";
-import { money, signedMoney } from "@/lib/format";
+import { money } from "@/lib/format";
 import { Button, Card, Container, SectionHeading, ScoreBar } from "@/components/ui/primitives";
 import { ScoreGauge, ScoreBandLabel } from "@/components/results/ScoreGauge";
 

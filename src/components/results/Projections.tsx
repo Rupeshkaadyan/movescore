@@ -82,9 +82,12 @@ function BarRow({
 }) {
   const width = Math.max(2, (Math.abs(value) / max) * 100);
   return (
-    <div className="flex items-center gap-3">
-      <span className="w-40 shrink-0 text-xs text-muted sm:w-52">{label}</span>
-      <div className="h-6 flex-1 overflow-hidden rounded-lg bg-slate-100">
+    // Fixed-width label + value columns cannot shrink below their min-content
+    // width, which pushed the page into horizontal scroll at 320px. Narrow them
+    // on small screens and let the bar take the remaining space.
+    <div className="flex items-center gap-2 sm:gap-3">
+      <span className="w-24 shrink-0 text-xs text-muted sm:w-40 lg:w-52">{label}</span>
+      <div className="h-6 min-w-0 flex-1 overflow-hidden rounded-lg bg-slate-100">
         <div
           className={cn(
             "h-full rounded-lg",
@@ -93,7 +96,7 @@ function BarRow({
           style={{ width: `${width}%` }}
         />
       </div>
-      <span className="w-24 shrink-0 text-right text-sm font-semibold tabular-nums text-ink">
+      <span className="w-20 shrink-0 text-right text-sm font-semibold tabular-nums text-ink sm:w-24">
         {money(value)}
       </span>
     </div>

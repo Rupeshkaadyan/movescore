@@ -23,16 +23,18 @@ export function SearchExperience() {
 
   // Search text never leaves the browser — only that a search happened and
   // whether it produced results.
+  // Depend on primitives derived from `hits`, not on the array itself, so the
+  // effect does not re-fire on every render that produces a new array identity.
+  const results = hits.length;
+  const matchedComparison = hits.some((hit) => hit.type === "comparison");
+
   useEffect(() => {
     if (!query.trim()) return;
     const timer = setTimeout(() => {
-      track("search_used", {
-        results: hits.length,
-        matchedComparison: hits.some((hit) => hit.type === "comparison"),
-      });
+      track("search_used", { results, matchedComparison });
     }, 800);
     return () => clearTimeout(timer);
-  }, [query, hits.length]);
+  }, [query, results, matchedComparison]);
 
   return (
     <div>
