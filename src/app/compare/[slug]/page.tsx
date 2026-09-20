@@ -16,9 +16,10 @@ import { parseCompareOptions, parseHouseholdInput, type RawParams } from "@/lib/
 import { money, signedMoney } from "@/lib/format";
 import { CITIES, POPULAR_COMPARISONS } from "@/lib/data/cities";
 import { DEFAULT_INPUT, DEFAULT_OPTIONS } from "@/lib/defaults";
-import { absoluteUrl, breadcrumbSchema, buildMetadata } from "@/lib/seo";
+import { absoluteUrl, breadcrumbSchema, buildMetadata, jsonLd } from "@/lib/seo";
 import { SCORE_METHODOLOGY } from "@/lib/calc/moveScore";
 import { DATA_STATUS } from "@/lib/data/sources";
+import { ViewBeacon } from "@/components/analytics/ViewBeacon";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -70,13 +71,23 @@ export default async function ComparePage({ params, searchParams }: PageProps) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(
+          __html: jsonLd(
             breadcrumbSchema([
               { name: "Home", url: "/" },
               { name: "Compare", url: "/compare" },
               { name: `${origin.name} vs ${destination.name}`, url: `/compare/${slug}` },
             ]),
           ),
+        }}
+      />
+
+      <ViewBeacon
+        event="comparison_completed"
+        props={{
+          from: origin.slug,
+          to: destination.slug,
+          housing: input.housingMode,
+          score: result.moveScore.score,
         }}
       />
 

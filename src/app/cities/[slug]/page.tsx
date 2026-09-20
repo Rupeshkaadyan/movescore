@@ -16,8 +16,11 @@ import { computeTaxes } from "@/lib/calc/tax";
 import { monthlyCosts } from "@/lib/calc/costOfLiving";
 import { DEFAULT_INPUT } from "@/lib/defaults";
 import { money, percent } from "@/lib/format";
-import { absoluteUrl, breadcrumbSchema, buildMetadata } from "@/lib/seo";
+import { absoluteUrl, breadcrumbSchema, buildMetadata, jsonLd } from "@/lib/seo";
 import { DATA_STATUS } from "@/lib/data/sources";
+import { ViewBeacon } from "@/components/analytics/ViewBeacon";
+import { DataProvenance } from "@/components/ui/DataProvenance";
+import type { MetricGroup } from "@/lib/types";
 
 type PageProps = { params: Promise<{ slug: string }> };
 
@@ -81,9 +84,10 @@ export default async function CityPage({ params }: PageProps) {
     },
   ];
 
-  const groups = [
+  const groups: { title: string; group: MetricGroup; rows: [string, string][] }[] = [
     {
       title: "Housing",
+      group: "housing",
       rows: [
         ["Median 1-bed rent", `${money(city.metrics.medianRent1br)}/mo`],
         ["Median 2-bed rent", `${money(city.metrics.medianRent2br)}/mo`],
@@ -95,6 +99,7 @@ export default async function CityPage({ params }: PageProps) {
     },
     {
       title: "Jobs and money",
+      group: "jobs",
       rows: [
         ["Median household income", money(city.metrics.medianHouseholdIncome)],
         ["Wage index (US = 100)", String(city.metrics.salaryIndex)],
@@ -106,6 +111,7 @@ export default async function CityPage({ params }: PageProps) {
     },
     {
       title: "Getting around",
+      group: "transportation",
       rows: [
         ["Average one-way commute", `${city.metrics.commuteMinutes} min`],
         ["Transit score", `${city.metrics.transitScore}/100`],
@@ -115,6 +121,7 @@ export default async function CityPage({ params }: PageProps) {
     },
     {
       title: "Climate and environment",
+      group: "weather",
       rows: [
         ["Climate score", `${city.metrics.climateScore}/100`],
         ["Sunny days per year", String(city.metrics.sunnyDays)],
@@ -125,6 +132,7 @@ export default async function CityPage({ params }: PageProps) {
     },
     {
       title: "Health, schools and safety",
+      group: "healthcare",
       rows: [
         ["Healthcare quality index", `${city.metrics.healthcareQualityIndex}/100`],
         ["School score", `${city.metrics.schoolScore}/100`],
@@ -141,7 +149,7 @@ export default async function CityPage({ params }: PageProps) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(
+          __html: jsonLd(
             breadcrumbSchema([
               { name: "Home", url: "/" },
               { name: "Cities", url: "/cities" },
@@ -153,7 +161,7 @@ export default async function CityPage({ params }: PageProps) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
+          __html: jsonLd({
             "@context": "https://schema.org",
             "@type": "FAQPage",
             mainEntity: faqs.map((faq) => ({
@@ -164,6 +172,8 @@ export default async function CityPage({ params }: PageProps) {
           }),
         }}
       />
+
+      <ViewBeacon event="city_viewed" props={{ city: city.slug, state: city.stateCode }} />
 
       <Container className="py-8">
         <Breadcrumbs
@@ -265,6 +275,7 @@ export default async function CityPage({ params }: PageProps) {
                     </div>
                   ))}
                 </dl>
+                <DataProvenance group={group.group} compact />
               </Card>
             ))}
           </div>

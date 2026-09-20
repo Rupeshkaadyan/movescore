@@ -30,13 +30,22 @@ const COLUMNS = [
       { label: "Saved comparisons", href: "/account" },
     ],
   },
+  {
+    title: "Company",
+    links: [
+      { label: "About", href: "/about" },
+      { label: "Contact", href: "/contact" },
+      { label: "Privacy", href: "/privacy" },
+      { label: "Terms", href: "/terms" },
+    ],
+  },
 ];
 
 export function Footer() {
   return (
     <footer className="mt-20 border-t border-line bg-ink text-slate-300 no-print">
       <Container className="py-14">
-        <div className="grid gap-10 md:grid-cols-[1.4fr_repeat(3,1fr)]">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-[1.4fr_repeat(4,1fr)]">
           <div>
             <Image
               src="/brand/logo-white.png"
@@ -78,7 +87,18 @@ export function Footer() {
             </Link>
             .
           </p>
-          <p>Data sources: U.S. Census, BLS, HUD, NOAA, FBI, CMS, EPA.</p>
+          <p className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <span>Data sources: U.S. Census, BLS, HUD, NOAA, FBI, CMS, EPA.</span>
+            <Link href="/privacy" className="hover:text-white">
+              Privacy
+            </Link>
+            <Link href="/terms" className="hover:text-white">
+              Terms
+            </Link>
+            <Link href="/contact" className="hover:text-white">
+              Contact
+            </Link>
+          </p>
         </div>
       </Container>
     </footer>
