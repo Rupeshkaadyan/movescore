@@ -38,9 +38,46 @@ Other scripts:
 
 ```bash
 npm run build       # production build
+npm run start       # serve the production build
 npm run typecheck   # tsc --noEmit
-npm run lint        # next lint
+npm run lint        # eslint .
+npm test            # vitest run (51 tests)
+npm run sample      # print a worked comparison to stdout
 ```
+
+## Environment variables
+
+Copy `.env.example` to `.env.local`. **Every value is optional** — the app runs
+on its bundled dataset with no configuration at all.
+
+| Variable                          | Required        | Notes                                              |
+| --------------------------------- | --------------- | -------------------------------------------------- |
+| `NEXT_PUBLIC_SITE_URL`            | **In production** | Canonical host. Wrong value = wrong canonicals.  |
+| `NEXT_PUBLIC_SUPABASE_URL`        | Phase 3+        |                                                    |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY`   | Phase 3+        | Safe to expose — RLS is what protects data.        |
+| `SUPABASE_SERVICE_ROLE_KEY`       | Phase 3+        | **Server-only. Never add a `NEXT_PUBLIC_` prefix.** |
+| `CENSUS_API_KEY`, `BLS_API_KEY`, `HUD_API_KEY`, `NOAA_API_KEY`, `EPA_API_KEY` | Phase 4 | Ingestion only. |
+| `NEXT_PUBLIC_ANALYTICS_ENDPOINT`  | Optional        | Empty = analytics disabled.                        |
+| `NEXT_PUBLIC_SENTRY_DSN`          | Optional        | Empty = error monitoring disabled.                 |
+| `INGEST_CRON_SECRET`              | Phase 4         | Guards `/api/ingest`.                              |
+
+Nothing in `.env` is ever committed — `.gitignore` covers `.env*`, and
+`.env.example` ships empty values only.
+
+## Database setup
+
+Supabase is **not required to run the site**. The schema exists and is
+versioned; the app simply does not connect yet.
+
+```bash
+supabase db push        # apply supabase/migrations/0001_init.sql
+```
+
+The migration creates the city/state/zip/housing/salary/tax/source tables plus
+`saved_comparisons`, with Row Level Security enabled. Every metric table carries
+`value`, `source`, `source_url`, `source_date`, `last_updated` and
+`methodology_note` — provenance is part of the schema, not an afterthought.
+See `docs/DATA.md`.
 
 ---
 
@@ -53,7 +90,7 @@ src/
 │   ├── compare/[slug]/       # THE result page: /compare/new-york-ny-vs-austin-tx
 │   ├── cities/[slug]/        # city profiles + neighborhoods
 │   ├── cost-of-living/[slug] # SEO cost pages
-│   ├── salary/[amount]/[slug]# take-home calculator pages
+│   ├── salary/[slug]/[amount] # take-home calculator pages (noindex variants)
 │   ├── jobs|housing|neighborhoods|guides|search|methodology|move-cost
 │   ├── account|admin         # Phase 5/7 placeholders (honest, not fake)
 │   ├── sitemap.ts, robots.ts
@@ -72,9 +109,13 @@ src/
 │   │   ├── moveCost.ts       # distance + weight moving estimate
 │   │   └── compare.ts        # orchestrator → ComparisonResult
 │   ├── data/                 # cities, neighborhoods, guides, sources
-│   ├── types.ts, defaults.ts, query.ts, cities.ts, format.ts, seo.ts, cn.ts
+│   ├── analytics.ts           # event architecture + sensitive-field denylist
+│   ├── seo.ts                 # buildMetadata, jsonLd, breadcrumb/dataset schema
+│   └── types.ts, defaults.ts, query.ts, cities.ts, format.ts, cn.ts
 └── public/brand/             # logos, app icon, favicon from the asset pack
-supabase/schema.sql           # Phase 3 database schema (source provenance built in)
+supabase/migrations/0001_init.sql  # versioned schema, RLS enabled
+docs/                         # architecture, data, deployment, SEO, security…
+.github/workflows/ci.yml      # typecheck, lint, test, build on every push
 ```
 
 ---
@@ -130,7 +171,8 @@ small surface, then expands.
 | `/compare/new-york-ny-vs-austin-tx?salary=150000&household=3&children=1&car=no&housing=own` | Scenario URLs are shareable |
 | `/cities/austin-tx`                          | City profile with FAQ schema               |
 | `/cities/austin-tx/neighborhoods`            | Neighbourhood comparison table             |
-| `/salary/120000/austin-tx`                   | Take-home pay calculator                   |
+| `/salary/austin-tx`                          | Take-home pay calculator                   |
+| `/salary/austin-tx/120000`                   | Same, at a fixed salary (`noindex`)        |
 | `/cost-of-living/austin-tx`                  | Monthly breakdown                          |
 | `/move-cost`                                 | Moving cost calculator                     |
 | `/methodology`                               | Scoring model, assumptions, sources        |
@@ -154,22 +196,72 @@ small surface, then expands.
 
 1. ✅ Frontend + demo data
 2. ✅ Calculation engine
-3. ⏳ Supabase/Postgres schema — `supabase/schema.sql` is written
+3. ⏳ Supabase/Postgres schema — `supabase/migrations/0001_init.sql` is written
 4. ⏳ Real U.S. data ingestion (Census, BLS, HUD, NOAA, EPA, FBI, CMS)
 5. ⏳ Auth, saved comparisons, PDF reports
 6. ⏳ SEO expansion (only pages with real content)
 7. ⏳ Admin dashboard, performance and accessibility polish
 
-## Deployment
+## Deployment architecture
+
+```
+git push origin main
+      ↓
+GitHub Actions (typecheck · lint · test · build)
+      ↓
+Vercel builds from main → production deployment
+      ↓
+Static/ISR pages served from the edge (no server runtime, no DB at request time)
+```
 
 Vercel is the default target. Set `NEXT_PUBLIC_SITE_URL` to your production
 domain so canonical URLs, Open Graph tags and `sitemap.xml` resolve correctly.
+Full walkthrough — including domain, DNS, Search Console and post-deploy
+verification — is in `docs/DEPLOYMENT.md`.
 
 ```bash
 vercel deploy --prod
 ```
 
+**Production / preview / development are separate.** Preview deployments get
+their own `NEXT_PUBLIC_SITE_URL` (the `*.vercel.app` host) so preview build
+canonicals never point at the live domain.
+
+## Known limitations
+
+Stated plainly, because a relocation tool that overstates its data is worse
+than no tool:
+
+- **The dataset is a labelled 30-city demo dataset.** Realistic in magnitude,
+  not verified statistics. `DATA_STATUS` in `src/lib/data/sources.ts` is the
+  single switch from demo to live; every page renders a demo notice until it
+  flips.
+- **No accounts, no saved comparisons, no PDF export.** Printing a result page
+  produces a clean report today.
+- **Estimates, not quotes.** Tax output is an annual estimate from published
+  brackets; it is not tax advice and ignores credits, deductions and filing
+  subtleties.
+- **30 metros only.** Anything outside the dataset returns "not found", not a
+  guessed number.
+- **Analytics and error monitoring are off** until you supply an endpoint.
+
+MoveScore does not claim to be 100% accurate, does not name a "best city", and
+does not guarantee savings.
+
 ## Documentation
 
-- `docs/ASSETS.md` — how the brand asset pack maps into the UI
-- `docs/DATA.md` — data model, provenance rules and the Phase 4 ingestion plan
+| Doc                                                     | What it covers                          |
+| ------------------------------------------------------- | --------------------------------------- |
+| `docs/ARCHITECTURE.md`                                  | System shape, rendering strategy, boundaries |
+| `docs/DATA.md`                                          | Data model, provenance rules, ingestion plan |
+| `docs/DEPLOYMENT.md`                                    | Vercel, domain, DNS, env, smoke tests   |
+| `docs/SEO.md`                                           | Metadata, sitemap, robots, Search Console |
+| `docs/ANALYTICS.md`                                     | Event list, privacy rules, collector contract |
+| `docs/SECURITY.md`                                      | Threat surface, secrets, headers, RLS   |
+| `docs/LAUNCH-CHECKLIST.md`                              | What is done vs. what needs your account |
+| `docs/DECISIONS.md`                                     | Why the stack and trade-offs were chosen |
+| `docs/ASSETS.md`                                        | How the brand asset pack maps into the UI |
+
+## License
+
+MIT — see `LICENSE`.

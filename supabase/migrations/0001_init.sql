@@ -1,4 +1,16 @@
 -- =============================================================================
+-- MoveScore — migration 0001_init
+-- Created: 2026-09-20
+--
+-- Apply with the Supabase CLI (from the project root):
+--   supabase link --project-ref <PROJECT_REF>
+--   supabase db push
+--
+-- Or in the Supabase SQL editor, in file order. Migrations are the source of
+-- truth for the schema; do not edit the database by hand.
+-- =============================================================================
+
+-- =============================================================================
 -- MoveScore — Postgres / Supabase schema (Phase 3)
 --
 -- Design rule: every quantitative table carries source provenance.
