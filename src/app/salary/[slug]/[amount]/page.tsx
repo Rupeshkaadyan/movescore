@@ -30,12 +30,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const city = CITIES.find((c) => c.slug === slug);
   const salary = Number(amount);
   if (!city || !Number.isFinite(salary)) {
-    return buildMetadata({ title: "Salary calculator", path: "/salary/100000/austin-tx" });
+    return buildMetadata({
+      title: "Salary calculator",
+      path: "/salary/austin-tx/100000",
+      noIndex: true,
+    });
   }
   return buildMetadata({
     title: `${money(salary)} salary in ${city.name}, ${city.stateCode} — take-home pay`,
     description: `Take-home pay after federal, state and local tax and FICA for a ${money(salary)} salary in ${city.name}, ${city.stateCode}.`,
-    path: `/salary/${salary}/${slug}`,
+    path: `/salary/${slug}/${salary}`,
+    // Near-duplicate of /salary/<city>. Kept out of the sitemap and out of
+    // Google's index; internal links still work for real users.
+    noIndex: true,
   });
 }
 
@@ -165,7 +172,7 @@ export default async function SalaryPage({ params }: PageProps) {
           {SALARY_PRESETS.map((preset) => (
             <li key={preset}>
               <Link
-                href={`/salary/${preset}/${city.slug}`}
+                href={`/salary/${city.slug}/${preset}`}
                 className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
                   preset === salary
                     ? "border-brand bg-brand text-white"
